@@ -12,11 +12,11 @@ class ModelConfig:
     hidden_dim: int = 128
     latent_dim: int = 8
     num_classes: int = 6
-    epochs: int = 1000
+    epochs: int = 200 #1000 in original
     learning_rate: float = 0.0005
     num_cycles: int = 5
     warmup: int = 5
-    early_stopping_patience: int = 100
+    early_stopping_patience: int = 10 #100 in original
     
     @property
     def folder_name(self) -> str:

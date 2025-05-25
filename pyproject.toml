@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "learning-with-noisy-graph-labels-competition-ijcnn-2025-main"
+name = "DL_hackaton"
 version = "0.1.0"
 description = ""
 authors = [

@@ -113,7 +113,7 @@ class ModelTrainer:
         if len(self.pretrain_models)>0:
             n = len(self.pretrain_models)
             model_file = self.pretrain_models[(cycle_num-1)%n]
-            model_data = torch.load(model_file, map_location=torch.device(self.device))
+            model_data = torch.load(model_file, map_location=torch.device(self.device), weights_only=False)
             model.load_state_dict(model_data['model_state_dict'])
             logging.info(f"Loaded pretrained model: {model_file}")
 
@@ -196,7 +196,7 @@ class ModelTrainer:
 
             # If there is no improvement, reload the best parameters
             if (epoch - epoch_best) > self.config.early_stopping_patience//2 and epoch%10==0:
-                model_data = torch.load(best_model_path)
+                model_data = torch.load(best_model_path, weights_only=False)
                 model.load_state_dict(model_data['model_state_dict'])
                 logging.info(f"Reloading best model: {best_model_path}")
                 
@@ -226,8 +226,9 @@ class ModelTrainer:
             class_loss = self.criterion(class_logits, data.y)
             
             # Total loss
-            loss = 0.15 * recon_loss + 0.1 * kl_loss + class_loss
-            
+            #loss = 0.15 * recon_loss + 0.1 * kl_loss + class_loss
+            loss = 0.12 * recon_loss + 0.13*kl_loss + class_loss #NEW! changed loss weights
+
             # Backward pass
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
@@ -292,7 +293,7 @@ class ModelTrainer:
 
     def get_model_loss(self, model_path: str) -> float:
         """Extract validation loss from saved model checkpoint"""
-        checkpoint = torch.load(model_path, map_location=self.device)
+        checkpoint = torch.load(model_path, map_location=self.device, weights_only=False)
         return checkpoint['val_loss']
     
 
@@ -332,7 +333,7 @@ class ModelTrainer:
             model = EdgeVGAE(1, 7, self.config.hidden_dim, 
                            self.config.latent_dim, 
                            self.config.num_classes).to(self.device)
-            model_data = torch.load(model_path)
+            model_data = torch.load(model_path, weights_only=False)
             model.load_state_dict(model_data['model_state_dict'])
             val_loss = model_data['val_loss']
             
@@ -395,7 +396,7 @@ class ModelTrainer:
             model = EdgeVGAE(1, 7, self.config.hidden_dim, 
                            self.config.latent_dim, 
                            self.config.num_classes).to(self.device)
-            model_data = torch.load(model_path)
+            model_data = torch.load(model_path, weights_only=False)
             model.load_state_dict(model_data['model_state_dict'])
             val_score = model_data['val_f1']
             
