@@ -7,6 +7,7 @@ from typing import List, Dict
 import pandas as pd
 import numpy as np
 import torch
+import torch.nn.functional as F
 import os
 
 from torch_geometric.loader import DataLoader
@@ -22,6 +23,31 @@ def warm_up_lr(epoch, num_epoch_warm_up, init_lr, optimizer):
     for params in optimizer.param_groups:
         params['lr'] = (epoch+1)**3 * init_lr / num_epoch_warm_up**3
 
+class NoisyCrossEntropyLoss(torch.nn.Module):
+    def __init__(self, p_noisy=0.2, label_smoothing=0.1):
+        super().__init__()
+        self.p = p_noisy
+        self.ce = torch.nn.CrossEntropyLoss(reduction='mean', label_smoothing=label_smoothing)
+
+    def forward(self, logits, targets):
+        losses = self.ce(logits, targets)
+        weights = (1 - self.p) + self.p * (1 - torch.nn.functional.one_hot(targets, num_classes=logits.size(1)).float().sum(dim=1))
+        return (losses * weights).mean()
+
+class SymmetricCrossEntropyLoss(torch.nn.Module):
+    def __init__(self, alpha=1.0, beta=1.0, p_noisy=0.2):
+        super().__init__()
+        self.alpha = alpha
+        self.beta = beta
+        self.p = p_noisy
+        self.ce = NoisyCrossEntropyLoss(p_noisy=p_noisy)
+
+    def forward(self, logits, target):
+        pred = F.softmax(logits, dim=1)
+        one_hot = F.one_hot(target, num_classes=logits.size(1)).float()
+        rce = (-torch.sum(pred * torch.log(one_hot + 1e-6), dim=1)).mean()
+        return self.alpha * self.ce(logits, target) + self.beta * rce
+
 class ModelTrainer:
     def __init__(self, config: 'ModelConfig', device: str):
         self.config = config
@@ -31,7 +57,16 @@ class ModelTrainer:
         self.best_f1_scores = []        
         self.setup_directories()
         self.setup_logging()
-        self.criterion = torch.nn.CrossEntropyLoss()
+
+        if self.config.loss_type == 'sce':
+            self.criterion = SymmetricCrossEntropyLoss()
+        elif self.config.loss_type == 'nce':
+            self.criterion = NoisyCrossEntropyLoss()
+        else:
+            # Default to CrossEntropyLoss
+            if self.config.loss_type != 'ce':
+                logging.warning(f"Unknown loss type '{self.config.loss_type}', defaulting to CrossEntropyLoss")
+            self.criterion = torch.nn.CrossEntropyLoss()
 
     def setup_directories(self):
         directories = ['checkpoints', 'submission', 'logs']
@@ -226,8 +261,8 @@ class ModelTrainer:
             class_loss = self.criterion(class_logits, data.y)
             
             # Total loss
-            #loss = 0.15 * recon_loss + 0.1 * kl_loss + class_loss
-            loss = 0.12 * recon_loss + 0.13*kl_loss + class_loss #NEW! changed loss weights
+            loss = 0.15 * recon_loss + 0.1 * kl_loss + class_loss
+            #loss = 0.12 * recon_loss + 0.13*kl_loss + class_loss #NEW! changed loss weights
 
             # Backward pass
             loss.backward()

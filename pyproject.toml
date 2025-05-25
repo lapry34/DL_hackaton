@@ -11,7 +11,7 @@ readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.9,<=3.10"
 numpy = "1.24.2"
 pandas = "1.2.4"
 scikit-learn = "0.24.1"
