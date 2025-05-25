@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "learning-with-noisy-graph-labels-competition-ijcnn-2025-main"
+version = "0.1.0"
+description = ""
+authors = [
+    "Gabriele Onorato <onorato.1979543@studenti.uniroma1.it>"
+]
+license = "MIT"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+numpy = "1.24.2"
+pandas = "1.2.4"
+scikit-learn = "0.24.1"
+torch = { version = "1.13.1+cu116", source = "pytorch-cu116" }
+torch-geometric = "2.6.1"
+
+[[tool.poetry.source]]
+name = "pytorch-cu116"
+url = "https://download.pytorch.org/whl/cu116"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
