@@ -3,7 +3,8 @@ name = "learning-with-noisy-graph-labels-competition-ijcnn-2025-main"
 version = "0.1.0"
 description = ""
 authors = [
-    "Gabriele Onorato <onorato.1979543@studenti.uniroma1.it>"
+    "Gabriele Onorato <onorato.1979543@studenti.uniroma1.it>",
+    "Alberto Guida <guida.2008583@studenti.uniroma1.it>"
 ]
 license = "MIT"
 readme = "README.md"
