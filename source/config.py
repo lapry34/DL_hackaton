@@ -16,7 +16,7 @@ class ModelConfig:
     learning_rate: float = 0.0005
     num_cycles: int = 5
     warmup: int = 5
-    early_stopping_patience: int = 10 #100 in original
+    early_stopping_patience: int = 20 #100 in original
     
     @property
     def folder_name(self) -> str:

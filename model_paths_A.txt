@@ -1,0 +1,5 @@
+checkpoints/model_A_cycle_1_epoch_1_loss_1.258_f1_0.674.pth
+checkpoints/model_A_cycle_2_epoch_0_loss_1.260_f1_0.679.pth
+checkpoints/model_A_cycle_3_epoch_0_loss_1.191_f1_0.692.pth
+checkpoints/model_A_cycle_4_epoch_0_loss_0.914_f1_0.738.pth
+checkpoints/model_A_cycle_5_epoch_0_loss_0.943_f1_0.725.pth
