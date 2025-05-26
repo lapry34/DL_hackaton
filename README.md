@@ -6,6 +6,9 @@ From Gabriele Onorato 1979543, Alberto Guida 2008583.
 Our contribution:
 Added NoisyCrossEntropyLoss with label smoothing, and used it in SymmetricCrossEntropyLoss.
 
+The script has a requirements.txt containing all the libraries needed to run the code, and the python version.
+both pyproject.toml and poetry.lock are provided for poetry users.
+
 Forza Roma.
 ---
 
