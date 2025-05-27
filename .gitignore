@@ -175,3 +175,4 @@ cython_debug/
 
 # remove datasets directory
 datasets/
+.vscode/settings.json
